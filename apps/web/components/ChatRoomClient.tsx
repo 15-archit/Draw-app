@@ -34,10 +34,10 @@ export function ChatRoomClient({
 
     return <div>
         {chats.map(m => <div>{m.message}</div>)}
-
-        <input type="text" value={currentMessage} onChange={e => {
+        <label htmlFor="message-input"> Message </label>
+        <input id="message-input" type="text" value={currentMessage} onChange={e => {
             setCurrentMessage(e.target.value);
-        }}></input>
+        }}/>
         <button onClick={() => {
             socket?.send(JSON.stringify({
                 type: "chat",
