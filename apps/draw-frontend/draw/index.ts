@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { HTTP_BACKEND } from "@/config";
 import axios from "axios";
 
@@ -48,4 +49,101 @@ async function getExistingShapes(roomId: string) {
     })
 
     return shapes;
+}
+
+export async function initDraw(canvas: HTMLCanvasElement, roomId: string, socket: WebSocket) {
+    const ctx = canvas.getContext("2d");
+
+    const existingShapes: Shape[] = await getExistingShapes(roomId)
+
+    if (!ctx) {
+        return
+    }
+
+    socket.onmessage = (event) => {
+        const message = JSON.parse(event.data);
+
+        if (message.type == "chat") {
+            const parsedShape = JSON.parse(message.message)
+            existingShapes.push(parsedShape.shape)
+            clearCanvas(existingShapes, canvas, ctx);
+        }
+    }
+    
+
+    clearCanvas(existingShapes, canvas, ctx);
+    let clicked = false;
+    let startX = 0;
+    let startY = 0;
+
+    canvas.addEventListener("mousedown", (e) => {
+        clicked = true
+        startX = e.clientX
+        startY = e.clientY
+    })
+
+    canvas.addEventListener("mouseup", (e) => {
+        clicked = false
+        const width = e.clientX - startX;
+        const height = e.clientY - startY;
+
+        // @ts-ignore
+        const selectedTool = window.selectedTool;
+        let shape: Shape | null = null;
+        if (selectedTool === "rect") {
+
+            shape = {
+                type: "rect",
+                x: startX,
+                y: startY,
+                height,
+                width
+            }
+        } else if (selectedTool === "circle") {
+            const radius = Math.max(width, height) / 2;
+            shape = {
+                type: "circle",
+                radius: radius,
+                centerX: startX + radius,
+                centerY: startY + radius,
+            }
+        }
+
+        if (!shape) {
+            return;
+        }
+
+        existingShapes.push(shape);
+
+        socket.send(JSON.stringify({
+            type: "chat",
+            message: JSON.stringify({
+                shape
+            }),
+            roomId
+        }))
+
+    })
+
+    canvas.addEventListener("mousemove", (e) => {
+        if (clicked) {
+            const width = e.clientX - startX;
+            const height = e.clientY - startY;
+            clearCanvas(existingShapes, canvas, ctx);
+            ctx.strokeStyle = "rgba(255, 255, 255)"
+            // @ts-ignore
+            const selectedTool = window.selectedTool;
+            if (selectedTool === "rect") {
+                ctx.strokeRect(startX, startY, width, height);   
+            } else if (selectedTool === "circle") {
+                const radius = Math.max(width, height) / 2;
+                const centerX = startX + radius;
+                const centerY = startY + radius;
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.closePath();                
+            }
+        }
+    })            
 }
