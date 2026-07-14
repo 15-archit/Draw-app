@@ -1,4 +1,4 @@
-import { initDraw } from "@/draw";
+
 import { useEffect, useRef, useState } from "react";
 import { IconButton } from "./IconButton";
 import { Minus, Plus, ZoomIn, ZoomOut, Hand, Grab, MousePointer, SquareDashedMousePointer, Eraser } from "lucide-react";
