@@ -7,9 +7,30 @@ import { prismaClient } from "@repo/db/client";
 import bcrypt from "bcrypt";
 import cors from "cors";
 
+const allowedOrigins = [
+    "http://localhost:3000"
+  ];
+  
+  
 const app = express();
 app.use(express.json());
-app.use(cors())
+
+app.use(cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true, // Allow cookies if needed
+  }));
+
+app.get("/", (req, res) => {
+    res.json({
+        message: "Hello from doodle-deck's http-backend!"
+    })
+});
 
 app.post("/signup", async (req, res) => {
 
@@ -81,12 +102,11 @@ app.post("/signin", async (req, res) => {
         `token=${token}; HttpOnly; Secure; Path=/; SameSite=Strict`,
     );
 
-    localStorage.setItem("userId", user.id);
-    localStorage.setItem("token", token);
-
-    res.json({
+    res.status(200).json({
+        username: user.name,
+        userId: user.id,
         token
-    })
+    });
 })
 
 app.post("/room", middleware, async (req, res) => {
@@ -136,7 +156,7 @@ app.get("/chats/:roomId", async (req, res) => {
             messages
         })
     } catch(e) {
-        console.log(e);
+        //console.log(e);
         res.json({
             messages: []
         })
