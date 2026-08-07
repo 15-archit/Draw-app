@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { HTTP_BACKEND } from "@/config";
 
 export default function SignupPage() {
     const router = useRouter();
@@ -20,14 +21,15 @@ export default function SignupPage() {
 
     const register = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (!formData.username && formData.email && formData.password) {
+        if (formData.username && formData.email && formData.password) {
             try {
                 const data = {
                     name: formData.username,
                     email: formData.email,
                     password: formData.password,
                 };
-                const response = await axios.post("/signup", data);
+                const response = await axios.post(`${HTTP_BACKEND}/signup`,
+                    data);
                 toast.success("Registered successfully");
                 router.push("/signin");
             } catch (error) {
@@ -75,8 +77,8 @@ export default function SignupPage() {
                                 </label>
                                 <input
                                     type="text"
-                                    id="name"
-                                    name="name"
+                                    id="username"
+                                    name="username"
                                     value={formData.username}
                                     onChange={handleInputChange}
                                     className="mt-1 block w-full px-3 py-2 text-zinc-800 border border-zinc-300 rounded-md shadow-sm focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm"

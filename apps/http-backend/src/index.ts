@@ -8,6 +8,7 @@ import bcrypt from "bcrypt";
 import cors from "cors";
 
 const allowedOrigins = [
+    "http://localhost:3001",
     "http://localhost:3000"
   ];
   
@@ -33,48 +34,64 @@ app.get("/", (req, res) => {
 });
 
 app.post("/signup", async (req, res) => {
+    console.log("Request body:", req.body);
 
     const parsedData = CreateUserSchema.safeParse(req.body);
+
     if (!parsedData.success) {
         console.log(parsedData.error);
-        res.json({
-            message: "Incorrect inputs"
-        })
-        return;
+        return res.status(400).json({
+            message: "Incorrect inputs",
+        });
     }
+
     try {
-        // Hash the password
         const hashedPassword = await bcrypt.hash(parsedData.data.password, 10);
+
         const user = await prismaClient.user.create({
             data: {
-                email: parsedData.data?.email,
+                email: parsedData.data.email,
                 password: hashedPassword,
-                name: parsedData.data.name
-            }
-        })
+                name: parsedData.data.name,
+            },
+        });
+
+        console.log("Created user:", user);
+
         res.json({
-            userId: user.id
-        })
-    } catch(e) {
-        res.status(411).json({
-            message: "User already exists with this username"
-        })
+            userId: user.id,
+        });
+    } catch (e) {
+        console.error(e);
+
+        res.status(500).json({
+            message: "Signup failed",
+        });
     }
-})
+});
 
 app.post("/signin", async (req, res) => {
     const parsedData = SigninSchema.safeParse(req.body);
+
     if (!parsedData.success) {
-        res.json({
-            message: "Incorrect inputs"
-        })
-        return;
+        return res.json({
+            message: "Incorrect inputs",
+        });
     }
+
+    console.log("Searching for:", parsedData.data.email);
+
+    const users = await prismaClient.user.findMany();
+    console.log("All users:", users);
+
     const user = await prismaClient.user.findFirst({
         where: {
-            email: parsedData.data.email
-        }
-    })
+            email: parsedData.data.email,
+        },
+    });
+
+    console.log("Found user:", user);
+
 
     if (!user) {
         res.status(403).json({
@@ -87,7 +104,7 @@ app.post("/signin", async (req, res) => {
     const isPasswordCorrect = await bcrypt.compare(parsedData.data.password, user.password);
     if (!isPasswordCorrect) {
         res.status(403).json({
-            message: "Incorrect password"
+            message: "Incorrect Credentials"
         })
         return;
     }

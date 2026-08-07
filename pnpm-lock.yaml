@@ -20,6 +20,9 @@ importers:
 
   apps/draw-frontend:
     dependencies:
+      '@repo/store':
+        specifier: workspace:*
+        version: link:../../packages/store
       '@repo/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -38,6 +41,9 @@ importers:
       react-dom:
         specifier: 19.2.4
         version: 19.2.4(react@19.2.4)
+      react-redux:
+        specifier: ^9.3.0
+        version: 9.3.0(@types/react@19.2.2)(react@19.2.4)(redux@5.0.1)
       react-toastify:
         specifier: ^11.1.0
         version: 11.1.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -245,9 +251,9 @@ importers:
     dependencies:
       '@reduxjs/toolkit':
         specifier: ^2.5.0
-        version: 2.12.0(react@19.2.4)
+        version: 2.12.0(react-redux@9.3.0(@types/react@19.2.2)(react@19.2.4)(redux@5.0.1))(react@19.2.4)
       typescript:
-        specifier: ^5.7.3
+        specifier: ^5.9.2
         version: 5.9.2
     devDependencies:
       '@repo/typescript-config':
@@ -949,6 +955,9 @@ packages:
 
   '@types/serve-static@2.2.0':
     resolution: {integrity: sha512-8mam4H1NHLtu7nmtalF7eyBH14QyOASmcxHhSfEoRyr0nP/YdoesEtU+uSRvMe96TW/HPTtkoKqQLl53N7UXMQ==}
+
+  '@types/use-sync-external-store@0.0.6':
+    resolution: {integrity: sha512-zFDAD+tlpf2r4asuHEj0XH6pY6i0g5NeAHPn+15wk3BV6JA69eERFXC1gyGThDkVa1zCyKr5jox1+2LbV/AMLg==}
 
   '@types/ws@8.18.1':
     resolution: {integrity: sha512-ThVF6DCVhA8kUGy+aazFQ4kXQ7E1Ty7A3ypFOe0IcJV8O/M511G99AW24irKrW56Wt44yG9+ij8FaqoBGkuBXg==}
@@ -2583,6 +2592,18 @@ packages:
   react-is@16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
 
+  react-redux@9.3.0:
+    resolution: {integrity: sha512-KQopgqFo/p/fgmAs5qz6p5RWaNAzq40WAu7fJIXnQpYxFPbJYtsJPWvGeF2rOBaY/kEuV77AVsX8TsQzKm+A/g==}
+    peerDependencies:
+      '@types/react': ^18.2.25 || ^19
+      react: ^18.0 || ^19
+      redux: ^5.0.0
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      redux:
+        optional: true
+
   react-toastify@11.1.0:
     resolution: {integrity: sha512-e9h23x3phN0wbFeB6yovmWp7lobzV4CaCH0LO8nVP6H7Y+3GbcLpIzMm9dJhcp1RXbpyfvjgpfXqO80QAmn7sg==}
     peerDependencies:
@@ -2923,6 +2944,11 @@ packages:
 
   uri-js@4.4.1:
     resolution: {integrity: sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==}
+
+  use-sync-external-store@1.6.0:
+    resolution: {integrity: sha512-Pp6GSwGP/NrPIrxVFAIkOQeyw8lFenOHijQWkUTrDvrF4ALqylP2C/KCkeS9dpUM3KvYRQhna5vt7IL95+ZQ9w==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
   util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
@@ -3429,7 +3455,7 @@ snapshots:
     dependencies:
       '@prisma/debug': 6.19.3
 
-  '@reduxjs/toolkit@2.12.0(react@19.2.4)':
+  '@reduxjs/toolkit@2.12.0(react-redux@9.3.0(@types/react@19.2.2)(react@19.2.4)(redux@5.0.1))(react@19.2.4)':
     dependencies:
       '@standard-schema/spec': 1.1.0
       '@standard-schema/utils': 0.3.0
@@ -3439,6 +3465,7 @@ snapshots:
       reselect: 5.2.0
     optionalDependencies:
       react: 19.2.4
+      react-redux: 9.3.0(@types/react@19.2.2)(react@19.2.4)(redux@5.0.1)
 
   '@rtsao/scc@1.1.0': {}
 
@@ -3615,6 +3642,8 @@ snapshots:
     dependencies:
       '@types/http-errors': 2.0.5
       '@types/node': 22.20.1
+
+  '@types/use-sync-external-store@0.0.6': {}
 
   '@types/ws@8.18.1':
     dependencies:
@@ -5409,6 +5438,15 @@ snapshots:
 
   react-is@16.13.1: {}
 
+  react-redux@9.3.0(@types/react@19.2.2)(react@19.2.4)(redux@5.0.1):
+    dependencies:
+      '@types/use-sync-external-store': 0.0.6
+      react: 19.2.4
+      use-sync-external-store: 1.6.0(react@19.2.4)
+    optionalDependencies:
+      '@types/react': 19.2.2
+      redux: 5.0.1
+
   react-toastify@11.1.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
     dependencies:
       clsx: 2.1.1
@@ -5884,6 +5922,10 @@ snapshots:
   uri-js@4.4.1:
     dependencies:
       punycode: 2.3.1
+
+  use-sync-external-store@1.6.0(react@19.2.4):
+    dependencies:
+      react: 19.2.4
 
   util-deprecate@1.0.2: {}
 
