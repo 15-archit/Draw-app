@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { HTTP_BACKEND } from "@/config";
 export default function SigninPage() {
     const router = useRouter();
     const [formData, setFormData] = useState({
@@ -16,22 +17,40 @@ export default function SigninPage() {
     };
 
     const createRoom = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        if (formData.name) {
-            try {
-                const data = {
-                    name: formData.name,
-                };
-                const response = await axios.post("/room", data);
-                const roomId = response.data.roomId;
-                toast.success("Room created successfully");
-                router.push("/canvas/"+roomId);
-            } catch (error) {
-                console.log(error);
-                toast.error("Something went wrong");
+    e.preventDefault();
+
+    if (formData.name) {
+        try {
+            const token = localStorage.getItem("token");
+             if (!token) {
+                toast.error("Please sign in first");
+                router.push("/signin");
+                return;
             }
+            const data = {
+                name: formData.name,
+            };
+
+            const response = await axios.post(
+                `${HTTP_BACKEND}/room`,
+                data,
+                {
+                    headers: {
+                        Authorization: token,
+                    },
+                }
+            );
+
+            const roomId = response.data.roomId;
+
+            toast.success("Room created successfully");
+            router.push("/canvas/" + roomId);
+        } catch (error) {
+            console.log(error);
+            toast.error("Something went wrong");
         }
-    };
+    }
+};
     return (
         <>
             <div className="bg-gradient-to-t from-indigo-900 to-white via-indigo-300 dark:from-gray-950 dark:to-indigo-900">

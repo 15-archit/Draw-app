@@ -24,6 +24,7 @@ export default function SignupPage() {
         if (formData.username && formData.email && formData.password) {
             try {
                 const data = {
+                    username: formData.username,
                     name: formData.username,
                     email: formData.email,
                     password: formData.password,
@@ -33,9 +34,14 @@ export default function SignupPage() {
                 toast.success("Registered successfully");
                 router.push("/signin");
             } catch (error) {
-                // TODO: Handle specific errors
+                if (axios.isAxiosError(error)) {
+                    console.log("Status:", error.response?.status);
+                    console.log("Backend response:", error.response?.data);
+                } else {
+                    console.log(error);
+                }
+
                 toast.error("Something went wrong");
-                console.log(error);
             }
         }
     };
@@ -70,7 +76,7 @@ export default function SignupPage() {
                         <form className="mt-6" onSubmit={register}>
                             <div className="mb-4">
                                 <label
-                                    htmlFor="name"
+                                    htmlFor="username"
                                     className="block text-md font-medium text-zinc-700"
                                 >
                                     Enter your name

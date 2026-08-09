@@ -10,22 +10,22 @@ import cors from "cors";
 const allowedOrigins = [
     "http://localhost:3001",
     "http://localhost:3000"
-  ];
-  
-  
+];
+
+
 const app = express();
 app.use(express.json());
 
 app.use(cors({
     origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error("Not allowed by CORS"));
+        }
     },
     credentials: true, // Allow cookies if needed
-  }));
+}));
 
 app.get("/", (req, res) => {
     res.json({
@@ -50,6 +50,7 @@ app.post("/signup", async (req, res) => {
 
         const user = await prismaClient.user.create({
             data: {
+                username: parsedData.data.username,
                 email: parsedData.data.email,
                 password: hashedPassword,
                 name: parsedData.data.name,
@@ -148,7 +149,7 @@ app.post("/room", middleware, async (req, res) => {
         res.json({
             roomId: room.id
         })
-    } catch(e) {
+    } catch (e) {
         res.status(411).json({
             message: "Room already exists with this name"
         })
@@ -172,13 +173,13 @@ app.get("/chats/:roomId", async (req, res) => {
         res.json({
             messages
         })
-    } catch(e) {
+    } catch (e) {
         //console.log(e);
         res.json({
             messages: []
         })
     }
-    
+
 })
 
 app.get("/room/:slug", async (req, res) => {
