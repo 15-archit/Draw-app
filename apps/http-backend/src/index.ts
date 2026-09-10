@@ -1,4 +1,4 @@
-import express from "express";
+import express, { type Express } from "express";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from '@repo/backend-common/config';
 import { middleware } from "./middleware";
@@ -13,7 +13,7 @@ const allowedOrigins = [
 ];
 
 
-const app = express();
+const app: Express = express();
 app.use(express.json());
 
 app.use(cors({
@@ -150,8 +150,10 @@ app.post("/room", middleware, async (req, res) => {
             roomId: room.id
         })
     } catch (e) {
-        res.status(411).json({
-            message: "Room already exists with this name"
+        console.error("ROOM CREATION ERROR:", e);
+
+        return res.status(500).json({
+            message: "Room creation failed",
         })
     }
 })
@@ -195,5 +197,4 @@ app.get("/room/:slug", async (req, res) => {
     })
 })
 
-console.log("http-backend listening on port - 4001")
-app.listen(4001);
+export default app;
