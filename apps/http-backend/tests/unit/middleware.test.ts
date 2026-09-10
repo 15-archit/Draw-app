@@ -8,6 +8,7 @@ import { middleware } from "../../src/middleware";
 vi.mock("jsonwebtoken", () => ({
   default: {
     verify: vi.fn(),
+    sign:vi.fn(),
   },
 }));
 
@@ -49,9 +50,13 @@ describe("Auth Middleware", () => {
       authorization: "valid-token",
     };
 
-    vi.mocked(jwt.verify).mockReturnValue({
-      userId: "user-123",
-    } as jwt.JwtPayload);
+  vi.mocked(jwt.verify).mockImplementation(
+    () =>
+      ({
+        userId: "user-123",
+      }) as jwt.JwtPayload
+  );
+
 
     middleware(req as Request, res as Response, next);
 
@@ -86,9 +91,12 @@ describe("Auth Middleware", () => {
       authorization: "valid-token",
     };
 
-    vi.mocked(jwt.verify).mockReturnValue({
-      userId: "user-456",
-    } as jwt.JwtPayload);
+    vi.mocked(jwt.verify).mockImplementation(
+    () =>
+      ({
+        userId: "user-123",
+      }) as jwt.JwtPayload
+  );
 
     middleware(req as Request, res as Response, next);
 

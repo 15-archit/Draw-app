@@ -75,15 +75,13 @@ app.post("/signin", async (req, res) => {
     const parsedData = SigninSchema.safeParse(req.body);
 
     if (!parsedData.success) {
-        return res.json({
+        return res.status(400).json({
             message: "Incorrect inputs",
         });
     }
 
     console.log("Searching for:", parsedData.data.email);
 
-    const users = await prismaClient.user.findMany();
-    console.log("All users:", users);
 
     const user = await prismaClient.user.findFirst({
         where: {

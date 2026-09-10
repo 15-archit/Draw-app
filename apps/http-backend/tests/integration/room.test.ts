@@ -71,9 +71,13 @@ describe("Room API", () => {
     });
 
     it("should create a room with valid token", async () => {
-      vi.mocked(jwt.verify).mockReturnValue({
+      vi.mocked(jwt.verify).mockImplementation(
+    () =>
+      ({
         userId: "user-123",
-      } as jwt.JwtPayload);
+      }) as jwt.JwtPayload
+  );
+
 
       vi.mocked(prismaClient.room.create).mockResolvedValue({
         id: 1,
@@ -103,9 +107,13 @@ describe("Room API", () => {
     });
 
     it("should reject invalid room name", async () => {
-      vi.mocked(jwt.verify).mockReturnValue({
+     vi.mocked(jwt.verify).mockImplementation(
+    () =>
+      ({
         userId: "user-123",
-      } as jwt.JwtPayload);
+      }) as jwt.JwtPayload
+  );
+
 
       const response = await request(app)
         .post("/room")
@@ -122,9 +130,13 @@ describe("Room API", () => {
     });
 
     it("should return 500 when room creation fails", async () => {
-      vi.mocked(jwt.verify).mockReturnValue({
+      vi.mocked(jwt.verify).mockImplementation(
+    () =>
+      ({
         userId: "user-123",
-      } as jwt.JwtPayload);
+      }) as jwt.JwtPayload
+  );
+
 
       vi.mocked(prismaClient.room.create).mockRejectedValue(
         new Error("Room already exists")
