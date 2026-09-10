@@ -1,159 +1,732 @@
-# Turborepo starter
+# 🎨 Draw App
 
-This Turborepo starter is maintained by the Turborepo core team.
+A real-time collaborative whiteboard application inspired by **Excalidraw**, where users can create rooms, join rooms, draw on a shared canvas, and communicate through real-time chat.
 
-## Using this example
+The project is built as a **TypeScript monorepo** using **Turborepo and pnpm**, with Next.js applications, Node.js HTTP and WebSocket backends, shared packages, and a PostgreSQL database powered by Prisma.
 
-Run the following command:
+## ✨ Features
 
-```sh
-npx create-turbo@latest
+* 🖌️ Interactive drawing canvas
+* ✏️ Pencil/freehand drawing
+* 🟦 Drawing shapes on the canvas
+* 💬 Real-time chat
+* 👥 Create and join collaborative rooms
+* 🔄 Real-time synchronization using WebSockets
+* 🔐 User authentication
+* 🎫 JWT-based authorization
+* 🔒 Password hashing using bcrypt
+* ✅ Request validation using Zod
+* 💾 Persistent users, rooms, and chat data
+* 🌓 Dark/light mode
+* 📱 Responsive frontend
+* ⚡ Monorepo architecture using Turborepo
+* 🧩 Shared packages for UI, state, types, database, and backend utilities
+* 🗄️ PostgreSQL database with Prisma ORM
+* 🐳 Docker-based database setup
+
+## 🖼️ Screenshots
+
+### 🏠 Home / Landing Page
+
+<img width="1920" height="1080" alt="Screenshot (6)" src="https://github.com/user-attachments/assets/1b273afb-a2c8-46e3-948e-50f2648fff61" />
+
+### 🔐 Sign In Page
+
+<img width="1920" height="1080" alt="Screenshot (7)" src="https://github.com/user-attachments/assets/2b0f0682-f603-4dac-8a51-3f14e86b995b" />
+
+### 🆕 Sign Up Page
+
+<img width="1920" height="1080" alt="Screenshot (8)" src="https://github.com/user-attachments/assets/beae60c4-19ef-4cc4-831d-890bfc33a219" />
+
+### 🎨 Drawing Canvas
+
+<img width="1920" height="911" alt="Screenshot (11)" src="https://github.com/user-attachments/assets/7676bf77-d17a-4009-a4a0-647cb1b26f2e" />
+
+### 💬 Real-time Chat
+
+<img width="1920" height="1080" alt="Screenshot (10)" src="https://github.com/user-attachments/assets/3c0a124a-3871-49b0-9c9b-786ef1395260" />
+
+## 🛠️ Tech Stack
+
+### Frontend
+
+* **Next.js**
+* **React**
+* **TypeScript**
+* **Tailwind CSS**
+* **Axios**
+* **Lucide React**
+* **Redux Toolkit**
+
+### Backend
+
+* **Node.js**
+* **Express.js**
+* **WebSocket**
+* **TypeScript**
+* **JWT**
+* **Zod**
+* **bcrypt**
+
+### Database
+
+* **PostgreSQL**
+* **Prisma ORM**
+
+### Development & Tooling
+
+* **Turborepo**
+* **pnpm Workspaces**
+* **Docker**
+* **ESLint**
+* **Prettier**
+* **Git & GitHub**
+
+## 🏗️ Architecture
+
+The application uses separate HTTP and WebSocket communication channels.
+
+```text
+                         ┌──────────────────────────┐
+                         │        Clients           │
+                         │                          │
+                         │  draw-frontend / web     │
+                         └────────────┬─────────────┘
+                                      │
+                     ┌────────────────┴────────────────┐
+                     │                                 │
+                  HTTP/REST                         WebSocket
+                     │                                 │
+                     ▼                                 ▼
+          ┌─────────────────────┐          ┌─────────────────────┐
+          │    HTTP Backend     │          │   WebSocket Backend │
+          │                     │          │                     │
+          │ Express + JWT +     │          │ Real-time Events    │
+          │ Zod + bcrypt        │          │ Room Communication  │
+          └──────────┬──────────┘          └──────────┬──────────┘
+                     │                                 │
+                     │                                 │
+                     └──────────────┬──────────────────┘
+                                    │
+                                    ▼
+                         ┌─────────────────────┐
+                         │     PostgreSQL      │
+                         │                     │
+                         │       Prisma        │
+                         └─────────────────────┘
 ```
 
-## What's inside?
+### Communication Flow
 
-This Turborepo includes the following packages/apps:
+**Authentication & Room APIs**
 
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo build
+```text
+draw-frontend
+      │
+      │ HTTP Request
+      ▼
+http-backend
+      │
+      ▼
+Prisma
+      │
+      ▼
+PostgreSQL
 ```
 
-Without global `turbo`, use your package manager:
+**Real-Time Drawing & Collaboration**
 
-```sh
-cd my-turborepo
-npx turbo build
-pnpm dlx turbo build
-pnpm exec turbo build
+```text
+User A
+   │
+   │ WebSocket
+   ▼
+ws-backend
+   │
+   ├──────────────► User B
+   ├──────────────► User C
+   └──────────────► User D
 ```
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+**Real-Time Chat**
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo build --filter=docs
+```text
+Client
+   │
+   │ WebSocket
+   ▼
+ws-backend
+   │
+   ├──────────────► Other users
+   │
+   └──────────────► PostgreSQL
 ```
 
-Without global `turbo`:
+## 📁 Project Structure
 
-```sh
-npx turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
+The project follows a **Turborepo monorepo architecture**.
+
+```text
+15-archit-draw-app/
+│
+├── README.md
+├── docker-compose.yml
+├── package.json
+├── pnpm-workspace.yaml
+├── turbo.json
+├── .npmrc
+│
+├── apps/
+│   │
+│   ├── draw-frontend/
+│   │   ├── app/
+│   │   │   ├── page.tsx
+│   │   │   ├── layout.tsx
+│   │   │   ├── canvas/
+│   │   │   │   └── [roomid]/
+│   │   │   │       └── page.tsx
+│   │   │   ├── create-room/
+│   │   │   │   └── page.tsx
+│   │   │   ├── join-room/
+│   │   │   │   └── page.tsx
+│   │   │   ├── signin/
+│   │   │   │   └── page.tsx
+│   │   │   └── signup/
+│   │   │       └── page.tsx
+│   │   │
+│   │   ├── components/
+│   │   │   ├── AuthPage.tsx
+│   │   │   ├── Canvas.tsx
+│   │   │   ├── DarkModeToggle.tsx
+│   │   │   ├── Features.tsx
+│   │   │   ├── Footer.tsx
+│   │   │   ├── Header.tsx
+│   │   │   ├── Hero.tsx
+│   │   │   ├── HowItWorks.tsx
+│   │   │   ├── IconButton.tsx
+│   │   │   ├── Pricing.tsx
+│   │   │   └── RoomCanvas.tsx
+│   │   │
+│   │   └── draw/
+│   │       ├── Game.ts
+│   │       ├── http.ts
+│   │       └── index.ts
+│   │
+│   ├── http-backend/
+│   │   └── src/
+│   │       ├── index.ts
+│   │       └── middleware.ts
+│   │
+│   ├── web/
+│   │   ├── app/
+│   │   │   ├── page.tsx
+│   │   │   └── room/
+│   │   │       └── [slug]/
+│   │   │           └── page.tsx
+│   │   │
+│   │   ├── components/
+│   │   │   ├── ChatRoom.tsx
+│   │   │   └── ChatRoomClient.tsx
+│   │   │
+│   │   └── hooks/
+│   │       └── useSocket.ts
+│   │
+│   └── ws-backend/
+│       └── src/
+│           └── index.ts
+│
+└── packages/
+    │
+    ├── backend-common/
+    │   └── src/
+    │       └── index.ts
+    │
+    ├── common/
+    │   └── src/
+    │       └── types.ts
+    │
+    ├── db/
+    │   ├── prisma/
+    │   │   ├── schema.prisma
+    │   │   └── migrations/
+    │   │
+    │   └── src/
+    │       └── index.ts
+    │
+    ├── eslint-config/
+    │   ├── base.js
+    │   ├── next.js
+    │   └── react-internal.js
+    │
+    ├── store/
+    │   └── src/
+    │       ├── store.ts
+    │       └── userSlice.ts
+    │
+    ├── typescript-config/
+    │   ├── base.json
+    │   ├── nextjs.json
+    │   └── react-library.json
+    │
+    └── ui/
+        └── src/
+            ├── button.tsx
+            ├── card.tsx
+            └── code.tsx
 ```
 
-### Develop
+## 📦 Monorepo Packages
 
-To develop all apps and packages, run the following command:
+The repository is divided into `apps` and `packages`.
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
+### `apps`
 
-```sh
-cd my-turborepo
-turbo dev
+| Application     | Purpose                                                        |
+| --------------- | -------------------------------------------------------------- |
+| `draw-frontend` | Main collaborative drawing application                         |
+| `web`           | Web application containing the real-time chat interface        |
+| `http-backend`  | REST API, authentication, room management and protected routes |
+| `ws-backend`    | WebSocket server responsible for real-time communication       |
+
+### `packages`
+
+| Package             | Purpose                                   |
+| ------------------- | ----------------------------------------- |
+| `backend-common`    | Shared backend functionality              |
+| `common`            | Shared TypeScript types                   |
+| `db`                | Prisma client, schema and database access |
+| `eslint-config`     | Shared ESLint configurations              |
+| `store`             | Redux store and user state                |
+| `typescript-config` | Shared TypeScript configurations          |
+| `ui`                | Reusable UI components                    |
+
+This structure allows frontend and backend applications to share common code while keeping each service independent.
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+Make sure you have the following installed:
+
+* **Node.js 18+**
+* **pnpm**
+* **Docker**
+* **Git**
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/15-archit/Draw-app.git
+cd Draw-app
 ```
 
-Without global `turbo`, use your package manager:
+### 2. Install dependencies
 
-```sh
-cd my-turborepo
-npx turbo dev
-pnpm exec turbo dev
-pnpm exec turbo dev
+```bash
+pnpm install
 ```
 
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+### 3. Configure environment variables
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+Create the required `.env` files for the database and backend configuration.
 
-```sh
-turbo dev --filter=web
+Example:
+
+```env
+DATABASE_URL="postgresql://postgres:password@localhost:5432/drawapp"
+JWT_SECRET="your-secret-key"
 ```
 
-Without global `turbo`:
+> Do not commit your `.env` files or secret keys to GitHub.
 
-```sh
-npx turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
+### 4. Start PostgreSQL
+
+The project includes a Docker Compose configuration.
+
+```bash
+docker compose up -d
 ```
 
-### Remote Caching
+### 5. Generate Prisma Client
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo login
+```bash
+pnpm prisma generate
 ```
 
-Without global `turbo`, use your package manager:
+### 6. Run database migrations
 
-```sh
-cd my-turborepo
-npx turbo login
-pnpm exec turbo login
-pnpm exec turbo login
+```bash
+pnpm prisma migrate dev
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+### 7. Start the development servers
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+From the root directory:
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo link
+```bash
+pnpm dev
 ```
 
-Without global `turbo`:
+Turborepo will run the development tasks configured for the workspace.
 
-```sh
-npx turbo link
-pnpm exec turbo link
-pnpm exec turbo link
+## 🔐 Authentication
+
+The application uses **JWT-based authentication**.
+
+The authentication flow is:
+
+```text
+                    Signup
+                       │
+                       ▼
+                Validate Input
+                       │
+                       ▼
+                Hash Password
+                   bcrypt
+                       │
+                       ▼
+                  PostgreSQL
+
+
+                    Signin
+                       │
+                       ▼
+                Validate User
+                       │
+                       ▼
+                  Generate JWT
+                       │
+                       ▼
+                    Client
+                       │
+                       ▼
+             Authenticated Requests
 ```
 
-## Useful Links
+### Authentication Components
 
-Learn more about the power of Turborepo:
+* **Zod** validates incoming request data.
+* **bcrypt** securely hashes passwords.
+* **JWT** is used to authenticate users.
+* Authentication middleware protects restricted API routes.
 
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+The HTTP authentication middleware is located at:
+
+```text
+apps/http-backend/src/middleware.ts
+```
+
+## 🔄 Real-Time Collaboration
+
+The application uses **WebSockets** for real-time communication.
+
+The WebSocket server is located at:
+
+```text
+apps/ws-backend/src/index.ts
+```
+
+When a user performs an action on the canvas, the event can be sent to the WebSocket server and distributed to other users in the same room.
+
+```text
+                  User A
+                    │
+                    │ Drawing Event
+                    ▼
+             WebSocket Server
+                    │
+          ┌─────────┼─────────┐
+          │         │         │
+          ▼         ▼         ▼
+       User A     User B     User C
+                   │         │
+                   └────┬────┘
+                        │
+                   Same Room
+```
+
+This enables collaborative drawing without requiring users to refresh the page.
+
+## 💬 Real-Time Chat
+
+The chat functionality is implemented using WebSockets.
+
+Relevant files include:
+
+```text
+apps/web/
+
+├── components/
+│   ├── ChatRoom.tsx
+│   └── ChatRoomClient.tsx
+│
+└── hooks/
+    └── useSocket.ts
+```
+
+The general flow is:
+
+```text
+Client
+   │
+   │ Chat Message
+   ▼
+WebSocket Server
+   │
+   ├──────────────► Users in Room
+   │
+   ▼
+PostgreSQL
+```
+
+## 🗄️ Database Models
+
+The application uses **PostgreSQL** with **Prisma ORM**.
+
+Database-related code is centralized inside:
+
+```text
+packages/db/
+```
+
+The Prisma schema is located at:
+
+```text
+packages/db/prisma/schema.prisma
+```
+
+The main entities include:
+
+```text
+User
+ │
+ ├── id
+ ├── name
+ ├── username
+ ├── email
+ └── password
+
+Room
+ │
+ ├── id
+ ├── slug
+ └── adminId
+
+Chat
+ │
+ ├── id
+ ├── roomId
+ └── message
+```
+
+The basic relationship is:
+
+```text
+        ┌─────────────┐
+        │    User     │
+        └──────┬──────┘
+               │
+               │ creates
+               ▼
+        ┌─────────────┐
+        │    Room     │
+        └──────┬──────┘
+               │
+               │ contains
+               ▼
+        ┌─────────────┐
+        │    Chat     │
+        └─────────────┘
+```
+
+## 🧩 Shared State
+
+Global user-related state is managed through the shared `store` package:
+
+```text
+packages/store/
+
+└── src/
+    ├── store.ts
+    └── userSlice.ts
+```
+
+This allows application-level state such as user information and authentication-related data to be shared across components.
+
+## 🧱 Shared UI Components
+
+Reusable UI components are maintained inside:
+
+```text
+packages/ui/
+```
+
+Current shared components include:
+
+```text
+packages/ui/src/
+
+├── button.tsx
+├── card.tsx
+└── code.tsx
+```
+
+This avoids duplicating common UI components across applications.
+
+## 🐳 Docker
+
+Docker is used to simplify local database setup.
+
+Start the containers:
+
+```bash
+docker compose up -d
+```
+
+Stop the containers:
+
+```bash
+docker compose down
+```
+
+Check running containers:
+
+```bash
+docker ps
+```
+
+## 🧪 Available Scripts
+
+Run these commands from the project root:
+
+```bash
+# Install dependencies
+pnpm install
+
+# Start development servers
+pnpm dev
+
+# Build all applications and packages
+pnpm build
+
+# Run linting
+pnpm lint
+
+# Check TypeScript types
+pnpm check-types
+
+# Format the codebase
+pnpm format
+```
+
+## 🧠 Key Concepts Implemented
+
+### Frontend
+
+* React component architecture
+* Next.js App Router
+* Dynamic routes
+* Client-side state management
+* Canvas API
+* REST API integration
+* WebSocket client communication
+* Responsive UI
+* Dark/light mode
+
+### Backend
+
+* REST API development
+* Express.js
+* WebSocket server
+* JWT authentication
+* Authentication middleware
+* Zod validation
+* Password hashing with bcrypt
+* Real-time event broadcasting
+
+### Database
+
+* PostgreSQL
+* Prisma ORM
+* Database migrations
+* Relational data modeling
+* User-room-chat relationships
+
+### Architecture
+
+* Monorepo architecture
+* Turborepo
+* pnpm Workspaces
+* Shared packages
+* HTTP + WebSocket communication
+* Separation of frontend and backend services
+* Shared state management
+
+## 🧩 Why Turborepo?
+
+Turborepo is used to manage the multiple applications and shared packages in the repository.
+
+The monorepo provides:
+
+* ♻️ Code reusability
+* 📦 Shared packages
+* ⚡ Faster development workflows
+* 🏗️ Better project organization
+* 🔄 Consistent configurations
+* 🧩 Easier dependency management
+* 🚀 Scalable project structure
+
+## 📌 Future Improvements
+
+Some features planned for future development:
+
+* [ ] Undo/redo functionality
+* [ ] Eraser tool
+* [ ] Selection and move tools
+* [ ] Text tool
+* [ ] More geometric shapes
+* [ ] Line and arrow tools
+* [ ] Canvas zoom and pan
+* [ ] Export canvas as PNG/SVG
+* [ ] Persistent canvas drawings
+* [ ] Cursor presence for other users
+* [ ] User avatars
+* [ ] Room invitation links
+* [ ] Improved mobile experience
+* [ ] Rate limiting and additional security
+* [ ]  gRPC for faster backend communication
+* [ ] Production deployment
+* [ ] Redis-based WebSocket scaling
+* [ ] Horizontal WebSocket server scaling
+
+## 🎯 What I Learned
+
+Building this project helped me understand and implement:
+
+* Real-time communication using WebSockets
+* JWT authentication and authorization
+* REST API development
+* Database design with PostgreSQL
+* Prisma ORM
+* React and Next.js
+* Canvas-based drawing
+* Redux state management
+* TypeScript in a full-stack application
+* Monorepo architecture with Turborepo
+* pnpm workspaces
+* Docker-based development environments
+* Client-server communication
+* Real-time event synchronization
+* Shared packages and code reuse
+* Separation of HTTP and WebSocket services
+
+## 👨‍💻 Author
+
+**Archit Vats**
+
+Full-Stack Developer | React | Next.js | Node.js | TypeScript
+
+---
+
+⭐ If you found this project useful, consider giving it a star!
